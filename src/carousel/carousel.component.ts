@@ -13,11 +13,12 @@
  * 4) default interval should be equal 5000
  */
 
-import { Component, Input, OnDestroy, Output, EventEmitter } from '@angular/core';
+import {Component, Input, OnDestroy, Output, EventEmitter} from '@angular/core';
 
-import { isBs3, LinkedList } from '../utils';
-import { SlideComponent } from './slide.component';
-import { CarouselConfig } from './carousel.config';
+import {isBs3, LinkedList} from '../utils';
+import {SlideComponent} from './slide.component';
+import {CarouselConfig} from './carousel.config';
+import {ArrowComponent} from './arrow.component';
 
 export enum Direction {UNKNOWN, NEXT, PREV}
 
@@ -28,18 +29,24 @@ export enum Direction {UNKNOWN, NEXT, PREV}
   selector: 'carousel',
   template: `
     <div (mouseenter)="pause()" (mouseleave)="play()" (mouseup)="play()" class="carousel slide">
-      <ol class="carousel-indicators" *ngIf="slides.length > 1">
+      <ol class="carousel-indicators" *ngIf="slides.length > 1 && displayIndicators">
          <li *ngFor="let slidez of slides; let i = index;" [class.active]="slidez.active === true" (click)="selectSlide(i)"></li>
       </ol>
       <div class="carousel-inner"><ng-content></ng-content></div>
-      <a class="left carousel-control carousel-control-prev" [class.disabled]="activeSlide === 0 && noWrap" (click)="previousSlide()" *ngIf="slides.length > 1">
+      
+      <a class="left carousel-control carousel-control-prev" [class.disabled]="activeSlide === 0 && noWrap" (click)="previousSlide()" *ngIf="slides.length > 1 && leftArrow == null">
         <span class="icon-prev carousel-control-prev-icon" aria-hidden="true"></span>
         <span *ngIf="isBs4" class="sr-only">Previous</span>
       </a>
-      <a class="right carousel-control carousel-control-next" (click)="nextSlide()"  [class.disabled]="isLast(activeSlide) && noWrap" *ngIf="slides.length > 1">
+ 
+      <a class="right carousel-control carousel-control-next" (click)="nextSlide()"  [class.disabled]="isLast(activeSlide) && noWrap" *ngIf="slides.length > 1 && rightArrow == null">
         <span class="icon-next carousel-control-next-icon" aria-hidden="true"></span>
         <span class="sr-only">Next</span>
       </a>
+      
+      <ng-content select=".left-arrow" *ngIf="slides.length > 1 && leftArrow != null"></ng-content>
+      <ng-content select=".right-arrow" *ngIf="slides.length > 1 && rightArrow != null"></ng-content>
+      
     </div>
   `
 })
@@ -49,7 +56,12 @@ export class CarouselComponent implements OnDestroy {
   /**  If `true` — will disable pausing on carousel mouse hover */
   @Input() public noPause: boolean;
 
+  @Input() public displayIndicators: boolean = true;
+
   protected _currentActiveSlide: number;
+
+  public leftArrow: ArrowComponent = null;
+  public rightArrow: ArrowComponent = null;
 
   /** Will be emitted when active slide has been changed. Part of two-way-bindable [(activeSlide)] property */
   @Output() public activeSlideChange: EventEmitter <any> = new EventEmitter<any>(false);
@@ -61,6 +73,7 @@ export class CarouselComponent implements OnDestroy {
       this._select(index);
     }
   }
+
   public get activeSlide(): number {
     return this._currentActiveSlide;
   }
@@ -74,6 +87,7 @@ export class CarouselComponent implements OnDestroy {
   public get interval(): number {
     return this._interval;
   }
+
   public set interval(value: number) {
     this._interval = value;
     this.restartTimer();
@@ -88,7 +102,7 @@ export class CarouselComponent implements OnDestroy {
   protected isPlaying: boolean;
   protected destroyed: boolean = false;
 
-  public get isBs4():boolean {
+  public get isBs4(): boolean {
     return !isBs3();
   }
 
@@ -111,6 +125,14 @@ export class CarouselComponent implements OnDestroy {
       this.activeSlide = 0;
       this.play();
     }
+  }
+
+  /**
+   *
+   * @param arrow
+   */
+  public addArrow(arrow: ArrowComponent): void {
+
   }
 
   /**
