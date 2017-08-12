@@ -18,7 +18,7 @@ import {Component, Input, OnDestroy, Output, EventEmitter} from '@angular/core';
 import {isBs3, LinkedList} from '../utils';
 import {SlideComponent} from './slide.component';
 import {CarouselConfig} from './carousel.config';
-import {ArrowComponent} from './arrow.component';
+import {ArrowComponent, ArrowDirection} from './arrow.component';
 
 export enum Direction {UNKNOWN, NEXT, PREV}
 
@@ -132,7 +132,11 @@ export class CarouselComponent implements OnDestroy {
    * @param arrow
    */
   public addArrow(arrow: ArrowComponent): void {
-
+    if (arrow.direction == ArrowDirection.PREV) {
+      this.leftArrow = arrow;
+    } else {
+      this.rightArrow = arrow;
+    }
   }
 
   /**
