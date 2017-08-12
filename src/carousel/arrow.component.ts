@@ -8,18 +8,20 @@ import { CarouselComponent } from './carousel.component';
     <a 
       [ngClass]="{
                 'carousel-control': true, 
-                'left carousel-control-prev': direction === ArrowDirection.PREV , 
-                'right carousel-control-next': direction === ArrowDirection.NEXT 
-      }" 
-      [class.disabled]="carousel.activeSlide === 0 && carousel.noWrap" 
+                'left carousel-control-prev': direction == 1,
+                'right carousel-control-next': direction == 2,
+                'disabled': carousel.activeSlide == 0 && carousel.noWrap 
+      }"
+      
       (click)="changeSlide()" *ngIf="carousel.slides.length > 1">
+      
       <ng-content></ng-content>
     </a>
   `
 })
 export class ArrowComponent implements OnInit {
   @Input()
-  public direction:ArrowDirection = ArrowDirection.PREV;
+  public direction:ArrowDirection;
   public carousel:CarouselComponent;
 
   public constructor(carousel:CarouselComponent) {
@@ -36,7 +38,10 @@ export class ArrowComponent implements OnInit {
 
   public ngOnInit():void {
     this.carousel.addArrow(this);
-   }
+
+    debugger;
+
+  }
 }
 
 export enum ArrowDirection { NEXT, PREV }
